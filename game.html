@@ -6,26 +6,36 @@
   </head>
   <body>
     <canvas width="1280" height="720" id="game"></canvas>
+
     <script src="engine/util.js"></script>
     <script src="engine/entities.js"></script>
+    <script src="engine/world.js"></script>
+    <script src="engine/renderer.js"></script>
 
     <script>
-      const canvas = document.getElementById('game');
-      const ctx = canvas.getContext('2d');
-      const test = new PhysicsEntity(new Vector2(0, 0), 10, 1);
+      const world = new World();
+      const pipeline = new RenderPipeline(world, 1280, 720);
+      pipeline.render();
 
-      function render() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // <test>
+      class TestPlayer extends PhysicsEntity {
+        constructor() {
+          super(new Vector2(0, 0), 10, 1);
+        }
 
-        test.addForce(new Vector2(.01, .01));
-        test._privateUpdate();
+        update(world) {
+          this.addForce(new Vector2(.01, .01));
+        }
 
-        ctx.fillRect(test.location.x, test.location.y, 10, 10);
-
-        requestAnimationFrame(render);
+        render(pipeline) {
+          const ctx = pipeline.ctx;
+          const grid = pipeline.grid;
+          ctx.fillRect(grid.tx(this.location.x), grid.ty(this.location.y), grid.tx(10), grid.sy(10));
+        }
       }
+      world.entities.physics.push(new TestPlayer());
+      // </test>
 
-      requestAnimationFrame(render);
     </script>
   </body>
 </html>

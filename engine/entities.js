@@ -14,23 +14,22 @@ class Entity {
   /**
    * !! Internal update function only a base class should override. !!
    * Designated for common update logic shared across multiple entities.
+   * @param {World} world
    */
-  _privateUpdate() {
-    this.update();
-  }
+  _privateUpdate(world) {}
 
   /**
    * Public update function. Entities should override this
    * if needed for custom functionality.
+   * @param {World} world
    */
-  update() {}
+  update(world) {}
 
   /**
    * Render this entity to the canvas.
-   * @param {CanvasRenderingContext2D} ctx
-   * @param {Grid} grid - Used to translate internal grid values to external values.
+   * @param {RenderPipeline} pipeline
    */
-  render(ctx, grid) {}
+  render(pipeline) {}
 }
 
 class PhysicsEntity extends Entity {
@@ -60,7 +59,10 @@ class PhysicsEntity extends Entity {
     this.acceleration.add(force);
   }
 
-  _privateUpdate() {
+  /**
+   * Overrides original _privateUpdate()
+   */
+  _privateUpdate(world) {
     // Update velocity with acceleration
     this.velocity.add(this.acceleration);
     this.velocity.limit(this.maxVelocity);
