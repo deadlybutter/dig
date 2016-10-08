@@ -5,9 +5,27 @@
     <title>Hello World!</title>
   </head>
   <body>
-    <h1>Hello World!</h1>
-    We are using node <script>document.write(process.versions.node)</script>,
-    Chrome <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
+    <canvas width="1280" height="720" id="game"></canvas>
+    <script src="engine/util.js"></script>
+    <script src="engine/entities.js"></script>
+
+    <script>
+      const canvas = document.getElementById('game');
+      const ctx = canvas.getContext('2d');
+      const test = new PhysicsEntity(new Vector2(0, 0), 10, 1);
+
+      function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        test.addForce(new Vector2(.01, .01));
+        test._privateUpdate();
+
+        ctx.fillRect(test.location.x, test.location.y, 10, 10);
+
+        requestAnimationFrame(render);
+      }
+
+      requestAnimationFrame(render);
+    </script>
   </body>
 </html>
