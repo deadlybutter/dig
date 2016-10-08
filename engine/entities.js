@@ -2,9 +2,11 @@ class Entity {
   /**
    * Create an entity.
    * @param {Vector2} location - Starting location.
+   * @param {Vector2} dimensions - Size of entity;
    */
-  constructor(location) {
+  constructor(location, dimensions) {
     this.location = location;
+    this.dimensions = dimensions;
 
     this._privateUpdate = this._privateUpdate.bind(this);
     this.update = this.update.bind(this);
@@ -39,8 +41,8 @@ class PhysicsEntity extends Entity {
    * @param {number} maxVelocity - The max velocity this entity can hit.
    * @param {number} mass - The mass of this entity.
    */
-  constructor(location, maxVelocity, mass) {
-    super(location);
+  constructor(location, dimensions, maxVelocity, mass) {
+    super(location, dimensions);
     this.maxVelocity = maxVelocity;
     this.mass = mass;
 

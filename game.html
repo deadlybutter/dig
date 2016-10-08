@@ -3,38 +3,49 @@
   <head>
     <meta charset="UTF-8">
     <title>Hello World!</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
   </head>
   <body>
     <canvas width="1280" height="720" id="game"></canvas>
 
     <script src="engine/util.js"></script>
     <script src="engine/entities.js"></script>
+    <script src="engine/block.js"></script>
+    <script src="engine/generator.js"></script>
     <script src="engine/world.js"></script>
+    <script src="engine/camera.js"></script>
     <script src="engine/renderer.js"></script>
 
     <script>
-      const world = new World();
-      const pipeline = new RenderPipeline(world, 1280, 720);
-      pipeline.render();
-
-      // <test>
       class TestPlayer extends PhysicsEntity {
         constructor() {
-          super(new Vector2(0, 0), 10, 1);
+          super(new Vector2(0, 532), new Vector2(CELL, CELL * 2), 10, 1);
         }
 
         update(world) {
-          this.addForce(new Vector2(.01, .01));
+          // this.addForce(new Vector2(1, -.08));
+          // this.addForce(new Vector2(0, -GRAVITY.y));
         }
 
         render(pipeline) {
           const ctx = pipeline.ctx;
-          const grid = pipeline.grid;
-          ctx.fillRect(grid.tx(this.location.x), grid.ty(this.location.y), grid.tx(10), grid.sy(10));
+          const camera = pipeline.camera;
+          pipeline.ctx.fillStyle = 'red';
+          ctx.fillRect(camera.getCenterX(), camera.getCenterY(), camera.sx(this.dimensions.x), camera.sy(this.dimensions.y));
         }
       }
-      world.entities.physics.push(new TestPlayer());
-      // </test>
+      const testPlayer = new TestPlayer();
+
+      const world = new World(1000, 500, testPlayer);
+      new WorldGenerator(world).build();
+
+      const pipeline = new RenderPipeline(world, 1280, 720, 30);
+      pipeline.render();
 
     </script>
   </body>

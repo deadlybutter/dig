@@ -1,3 +1,5 @@
+const CELL = 16;
+
 class Vector2 {
   /**
    * Create a Vector.
