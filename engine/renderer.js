@@ -4,7 +4,7 @@ class RenderPipeline {
   /**
    * Create a render pipeline. Automatically constructs the grid & fetches canvas.
    */
-  constructor(world, width, height, targetFps) {
+  constructor(world, width, height) {
     this.world = world;
 
     this.canvas = document.getElementById('game');
@@ -13,24 +13,22 @@ class RenderPipeline {
 
     this.render = this.render.bind(this);
 
-    this._now = undefined;
-    this._then = Date.now();
-    this._interval = 1000 / targetFps;
+    this.lastCall = undefined;
     this.delta = 0;
+    this.fps = 0;
   }
 
   /**
    * Render pipeline, recursive function once called.
    */
   render() {
-    requestAnimationFrame(this.render);
 
-    this._now = Date.now();
-    this.delta = this._now - this._then;
-
-    if (this.delta < this._interval) return;
-
-    this._then = this._now - (this.delta % this._interval);
+    if (!this.lastCall) {
+      this.lastCall = Date.now();
+    }
+    this.delta = (Date.now() - this.lastCall) / 1000;
+    this.lastCall = Date.now();
+    if (DEBUG) console.log('FPS:', 1 / this.delta);
 
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -68,6 +66,6 @@ class RenderPipeline {
       ctx.stroke();
     }
 
-    // requestAnimationFrame(this.render);
+    requestAnimationFrame(this.render);
   }
 }
