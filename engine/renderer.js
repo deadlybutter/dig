@@ -3,8 +3,11 @@ let DEBUG = false;
 class RenderPipeline {
   /**
    * Create a render pipeline. Automatically constructs the grid & fetches canvas.
+   * @param {World} world
+   * @param {number} width - Camera width.
+   * @param {number} height - Camera height.
    */
-  constructor(world, width, height) {
+  constructor(world, width, height, distance) {
     this.world = world;
 
     this.canvas = document.getElementById('game');
@@ -12,49 +15,46 @@ class RenderPipeline {
     this.camera = new Camera(this.canvas, width, height, world.getMainPlayer());
 
     this.render = this.render.bind(this);
-
-    this.lastCall = undefined;
-    this.delta = 0;
-    this.fps = 0;
   }
 
   /**
    * Render pipeline, recursive function once called.
    */
   render() {
-
-    if (!this.lastCall) {
-      this.lastCall = Date.now();
-    }
-    this.delta = (Date.now() - this.lastCall) / 1000;
-    this.lastCall = Date.now();
-    if (DEBUG) console.log('FPS:', 1 / this.delta);
+    this.world.update();
 
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    this.world.update();
 
     // render bg layers
 
     // render particles
 
     // render blocks
-    for (var x = 0; x < this.world.blocks.length; x++) {
-      for (var y = 0; y < this.world.blocks[x].length; y++) {
-        this.world.blocks[x][y].render(this);
+    const center = world.getMainPlayer().location;
+    const centerX = Math.round(center.x / CELL) * CELL;
+    const centerY = Math.round(center.y / CELL) * CELL;
+    const wDistance = world.width / 2;
+    const hDistance = world.height / 2;
+    for (var x = centerX - wDistance; x < centerX + wDistance; x += CELL) {
+      if (!this.world.blocks[x]) {
+        continue;
+      }
+      for (var y = centerY - hDistance; y < centerY + hDistance; y += CELL) {
+        const block = this.world.blocks[x][y];
+        if (block) {
+          block.render(this);
+        }
       }
     }
 
     // render physics entities
-    for (const entityIndex in this.world.entities.physics) {
-      const entity = this.world.entities.physics[entityIndex];
+    this.world.entities.physics.forEach((entity) => {
       entity.render(this);
-    }
+    });
 
     // render debug
     if (DEBUG) {
-      console.log('FPS:', this.fps);
       ctx.fillStyle = 'black';
       ctx.beginPath();
       ctx.moveTo(this.canvas.width / 2, 0);

@@ -1,4 +1,4 @@
-const CELL = 16;
+const CELL = 32;
 
 class Vector2 {
   /**

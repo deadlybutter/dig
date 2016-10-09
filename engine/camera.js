@@ -19,14 +19,24 @@ class Camera {
 
     this.getCenterX = this.getCenterX.bind(this);
     this.getCenterY = this.getCenterY.bind(this);
+    this.calculate = this.recalculate.bind(this);
+
+    this.recalculate();
+  }
+
+  recalculate() {
+    this.cachedCenterX = (this.canvas.width / 2) - (this.player.dimensions.x / 2);
+    this.cachedCenterY = (this.canvas.height / 2) - (this.player.dimensions.y / 2);
+    this.cachedScaleX = (this.canvas.width / this.width);
+    this.cachedScaleY = (this.canvas.height / this.height);
   }
 
   getCenterX() {
-    return (this.canvas.width / 2) - (this.player.dimensions.x / 2)
+    return this.cachedCenterX;
   }
 
   getCenterY() {
-    return (pipeline.canvas.height / 2) - (this.player.dimensions.y / 2);
+    return this.cachedCenterY;
   }
 
   /**
@@ -35,7 +45,7 @@ class Camera {
    * @param {number} x
    */
   scaleX(x) {
-    return (this.canvas.width / this.width) * x;
+    return this.cachedScaleX * x;
   }
 
   /**
@@ -52,7 +62,7 @@ class Camera {
    * @param {number} y
    */
   scaleY(y) {
-    return (this.canvas.height / this.height) * y;
+    return this.cachedScaleY * y;
   }
 
   /**

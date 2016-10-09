@@ -15,6 +15,7 @@
 
     <script src="engine/util.js"></script>
     <script src="engine/entities.js"></script>
+    <script src="engine/classes/test.js"></script>
     <script src="engine/block.js"></script>
     <script src="engine/generator.js"></script>
     <script src="engine/world.js"></script>
@@ -22,27 +23,12 @@
     <script src="engine/renderer.js"></script>
 
     <script>
-      class TestPlayer extends PhysicsEntity {
-        constructor() {
-          super(new Vector2(0, 532), new Vector2(CELL, CELL * 2), 10, 1);
-        }
-
-        update(world) {
-          // this.addForce(new Vector2(1, -.08));
-          // this.addForce(new Vector2(0, -GRAVITY.y));
-        }
-
-        render(pipeline) {
-          const ctx = pipeline.ctx;
-          const camera = pipeline.camera;
-          pipeline.ctx.fillStyle = 'red';
-          ctx.fillRect(camera.getCenterX(), camera.getCenterY(), camera.sx(this.dimensions.x), camera.sy(this.dimensions.y));
-        }
-      }
       const testPlayer = new TestPlayer();
 
-      const world = new World(1000, 500, testPlayer);
+      const world = new World(CELL * 500, CELL * 256, testPlayer);
       new WorldGenerator(world).build();
+
+      testPlayer.location.y = world.height + CELL;
 
       const pipeline = new RenderPipeline(world, 1280, 720, 30);
       pipeline.render();
