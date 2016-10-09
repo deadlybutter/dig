@@ -13,5 +13,9 @@ class TestPlayer extends PhysicsEntity {
     const camera = pipeline.camera;
     pipeline.ctx.fillStyle = 'red';
     ctx.fillRect(camera.getCenterX(), camera.getCenterY(), camera.sx(this.dimensions.x), camera.sy(this.dimensions.y));
+
+    pipeline.ctx.fillStyle = 'blue';
+    const y = Math.round((this.location.y - this.dimensions.y) / CELL) * CELL;
+    ctx.fillRect(pipeline.camera.tx(this.location.x), pipeline.camera.ty(y), 8, 8);
   }
 }

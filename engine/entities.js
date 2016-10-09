@@ -19,7 +19,7 @@ class Entity {
    * @return {bool} collides
    */
   checkBottom(blocks) {
-    const x = Math.round((this.location.x - this.dimensions.x) / CELL) * CELL;
+    const x = this.location.x;
     const y = Math.round((this.location.y - this.dimensions.y) / CELL) * CELL;
     if (blocks[x] == undefined) return false;
     return blocks[x][y] == undefined;
@@ -85,7 +85,10 @@ class PhysicsEntity extends Entity {
     // Update location info with velocity if it doesn't collide with a block
     // TODO: More check functions & add per X/Y depending on failures?
     if (this.checkBottom(world.blocks)) {
-      this.location.add(this.velocity);
+      this.location.y += this.velocity.y;
+    }
+    else {
+      this.location.y = Math.round((this.location.y) / CELL) * CELL;
     }
 
     // Reset acceleration
