@@ -1,1 +1,6 @@
+# NodeJS related files
 node_modules/
+
+# Build files
+build/*
+!build/building.md

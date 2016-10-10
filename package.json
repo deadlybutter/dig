@@ -1,13 +1,14 @@
 {
   "name": "dig",
+  "description": "",
   "version": "0.1.0",
   "main": "app.js",
   "scripts": {
-    "start": "./node_modules/.bin/electron ."
+    "dist": "electron-packager . --all --out ./build",
+    "dist_windows": "electron-packager . --platform=win32 --arch=x64 --out ./build"
   },
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "electron": "^1.4.3"
   }
