@@ -23,7 +23,7 @@ class World {
   }
 
   /**
-   * Apply gravity & ~friction~ (SOON) to the given entity.
+   * Apply gravity & friction to the given entity.
    * @param {PhysicsEntity} entity
    */
   applyWorldForces(entity) {
