@@ -123,8 +123,8 @@ class Vector2 {
    * @return {Vector2} - Capped version of this Vector.
    */
   limit(cap) {
-    this.x = Math.min(this.x, cap);
-    this.y = Math.min(this.y, cap);
+    (this.x > 0) ? this.x = Math.min(this.x, cap) : this.x = Math.max(this.x, -cap);
+    (this.y > 0) ? this.y = Math.min(this.y, cap) : this.y = Math.max(this.y, -cap);
     return this;
   }
 }

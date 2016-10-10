@@ -16,6 +16,7 @@
     <script src="engine/util.js"></script>
     <script src="engine/entities.js"></script>
     <script src="engine/classes/test.js"></script>
+    <script src="engine/controls.js"></script>
     <script src="engine/block.js"></script>
     <script src="engine/generator.js"></script>
     <script src="engine/world.js"></script>
@@ -24,6 +25,7 @@
 
     <script>
       const testPlayer = new TestPlayer();
+      const controls = new KeyboardControls(testPlayer);
 
       const world = new World(CELL * 500, CELL * 256, testPlayer);
       new WorldGenerator(world).build();

@@ -16,13 +16,49 @@ class Entity {
   /**
    * Check if this entity collides with any blocks beneath it.
    * @param {array} blocks
-   * @return {bool} collides
+   * @return {bool} collides - False if it doesn't collide.
    */
   checkBottom(blocks) {
-    const x = this.location.x;
+    const x = Math.round((this.location.x) / CELL) * CELL;
     const y = Math.round((this.location.y - this.dimensions.y) / CELL) * CELL;
     if (blocks[x] == undefined) return false;
-    return blocks[x][y] == undefined;
+    return blocks[x][y] != undefined;
+  }
+
+  /**
+   * Check if this entity collides with any blocks above it.
+   * @param {array} blocks
+   * @return {bool} collides - False if it doesn't collide.
+   */
+  checkTop(blocks) {
+    const x = Math.round((this.location.x) / CELL) * CELL;
+    const y = Math.round((this.location.y + CELL) / CELL) * CELL;
+    if (blocks[x] == undefined) return false;
+    return blocks[x][y] != undefined;
+  }
+
+  /**
+   * Check if this entitiy collides with any block on the left or right.
+   * @param {array} blocks
+   * @param {string} side - "left" or "right"
+   * @param {bool} collides - True if it doesn't collide.
+   */
+  checkSide(blocks, side) {
+    const x = side === "left" ?
+      Math.round((this.location.x + -CELL) / CELL) * CELL :
+      Math.round((this.location.x + this.dimensions.x) / CELL) * CELL;
+
+    if (blocks[x] == undefined) {
+      return false;
+    }
+
+    for (var y = Math.round((this.location.y) / CELL) * CELL; y > this.location.y - this.dimensions.y; y -= CELL) {
+      if (blocks[x][y] != undefined) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -53,11 +89,15 @@ class PhysicsEntity extends Entity {
    * @param {Vector2} dimensions - Size of entity;
    * @param {number} maxVelocity - The max velocity this entity can hit.
    * @param {number} mass - The mass of this entity.
+   * @param {Vector2} moveSpeed - The speed this entity moves from a keypress.
+   * @param {Vector2} jumpSpeed - The speed this entity jumps at.
    */
-  constructor(location, dimensions, maxVelocity, mass) {
+  constructor(location, dimensions, maxVelocity, mass, moveSpeed, jumpSpeed) {
     super(location, dimensions);
     this.maxVelocity = maxVelocity;
     this.mass = mass;
+    this.moveSpeed = moveSpeed;
+    this.jumpSpeed = jumpSpeed;
 
     this.velocity = new Vector2(0, 0);
     this.acceleration = new Vector2(0, 0);
@@ -83,15 +123,32 @@ class PhysicsEntity extends Entity {
     this.velocity.limit(this.maxVelocity);
 
     // Update location info with velocity if it doesn't collide with a block
-    // TODO: More check functions & add per X/Y depending on failures?
-    if (this.checkBottom(world.blocks)) {
-      this.location.y += this.velocity.y;
+    if (this.velocity.y < 0) {
+      if (this.checkBottom(world.blocks)) {
+        this.location.y = Math.round((this.location.y) / CELL) * CELL;
+      }
+      else {
+        this.location.y += this.velocity.y;
+      }
     }
-    else {
-      this.location.y = Math.round((this.location.y) / CELL) * CELL;
+    else if (this.velocity.y > 0) {
+      if (!this.checkTop(world.blocks)) {
+        this.location.y += this.velocity.y;
+      }
+    }
+
+    const horizontalVelocity = this.velocity.x;
+    if (horizontalVelocity != 0) {
+      const direction = horizontalVelocity > 0 ? 'right' : 'left';
+      if (this.checkSide(world.blocks, direction)) {
+        this.location.x = Math.round((this.location.x) / CELL) * CELL;
+      }
+      else {
+        this.location.x += this.velocity.x;
+      }
     }
 
     // Reset acceleration
-    this.acceleration.scale(0);
+    this.acceleration = new Vector2(0, 0);
   }
 }
