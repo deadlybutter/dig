@@ -1,4 +1,4 @@
-const GRAVITY = new Vector2(0, -1);
+const GRAVITY = new Vector2(0, -2);
 
 class World {
   /**
@@ -28,6 +28,16 @@ class World {
    */
   applyWorldForces(entity) {
     entity.addForce(Vector2.Scale(GRAVITY, entity.mass));
+
+    const block = entity.getBlockUnder(this.blocks);
+    if (!block) return;
+
+    const blockFriction = block.friction;
+    const normal = 1;
+    const frictionMag = blockFriction * normal;
+    const friction = entity.velocity.copy().scale(-1).normalize().scale(frictionMag);
+    friction.y = 0;
+    entity.addForce(friction);
   }
 
   getMainPlayer() {

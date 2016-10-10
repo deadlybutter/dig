@@ -14,51 +14,15 @@ class Entity {
   }
 
   /**
-   * Check if this entity collides with any blocks beneath it.
+   * Get the block under this entity.
    * @param {array} blocks
-   * @return {bool} collides - False if it doesn't collide.
+   * @return {Block} block || undefined
    */
-  checkBottom(blocks) {
-    const x = Math.round((this.location.x) / CELL) * CELL;
-    const y = Math.round((this.location.y - this.dimensions.y) / CELL) * CELL;
-    if (blocks[x] == undefined) return false;
-    return blocks[x][y] != undefined;
-  }
-
-  /**
-   * Check if this entity collides with any blocks above it.
-   * @param {array} blocks
-   * @return {bool} collides - False if it doesn't collide.
-   */
-  checkTop(blocks) {
-    const x = Math.round((this.location.x) / CELL) * CELL;
-    const y = Math.round((this.location.y + CELL) / CELL) * CELL;
-    if (blocks[x] == undefined) return false;
-    return blocks[x][y] != undefined;
-  }
-
-  /**
-   * Check if this entitiy collides with any block on the left or right.
-   * @param {array} blocks
-   * @param {string} side - "left" or "right"
-   * @param {bool} collides - True if it doesn't collide.
-   */
-  checkSide(blocks, side) {
-    const x = side === "left" ?
-      Math.round((this.location.x + -CELL) / CELL) * CELL :
-      Math.round((this.location.x + this.dimensions.x) / CELL) * CELL;
-
-    if (blocks[x] == undefined) {
-      return false;
-    }
-
-    for (var y = Math.round((this.location.y) / CELL) * CELL; y > this.location.y - this.dimensions.y; y -= CELL) {
-      if (blocks[x][y] != undefined) {
-        return true;
-      }
-    }
-
-    return false;
+  getBlockUnder(blocks) {
+    const blockX = Math.round((this.location.x) / CELL) * CELL;
+    if (!blocks[blockX]) return undefined;
+    const blockY = Math.round((this.location.y - this.dimensions.y) / CELL) * CELL;
+    return blocks[blockX][blockY];
   }
 
   /**
@@ -87,7 +51,7 @@ class PhysicsEntity extends Entity {
    * Create an entity capable of physics.
    * @param {Vector2} location - Starting location.
    * @param {Vector2} dimensions - Size of entity;
-   * @param {number} maxVelocity - The max velocity this entity can hit.
+   * @param {Vector2} maxVelocity - The max velocity this entity can hit.
    * @param {number} mass - The mass of this entity.
    * @param {Vector2} moveSpeed - The speed this entity moves from a keypress.
    * @param {Vector2} jumpSpeed - The speed this entity jumps at.
@@ -106,6 +70,14 @@ class PhysicsEntity extends Entity {
   }
 
   /**
+   * Attach controls to this entity.
+   * @param {KeyboardControls} controls
+   */
+  attachControls(controls) {
+    this.controls = controls;
+  }
+
+  /**
    * Apply a force to this entity.
    * @param {Vector2} force
    */
@@ -120,32 +92,32 @@ class PhysicsEntity extends Entity {
   _privateUpdate(world) {
     // Update velocity with acceleration
     this.velocity.add(this.acceleration);
-    this.velocity.limit(this.maxVelocity);
+    this.velocity.limitByVector(this.maxVelocity);
 
-    // Update location info with velocity if it doesn't collide with a block
-    if (this.velocity.y < 0) {
-      if (this.checkBottom(world.blocks)) {
-        this.location.y = Math.round((this.location.y) / CELL) * CELL;
-      }
-      else {
-        this.location.y += this.velocity.y;
+    // Apply vertical velocity
+    const verticalVelocity = this.velocity.y;
+    const verticalLocation = Vector2.Add(this.location, new Vector2(0, verticalVelocity));
+    const verticalBB = new BoundingBox(verticalLocation, this.dimensions);
+
+    if (verticalBB.intersects(world.blocks)) {
+      if (this.velocity.y < 0) {
+        this.location.y = Math.round((this.location.y - (CELL / 2)) / CELL) * CELL;
       }
     }
-    else if (this.velocity.y > 0) {
-      if (!this.checkTop(world.blocks)) {
-        this.location.y += this.velocity.y;
-      }
+    else {
+      this.location.y += this.velocity.y;
     }
 
+    // Apply horizontal velocity
     const horizontalVelocity = this.velocity.x;
-    if (horizontalVelocity != 0) {
-      const direction = horizontalVelocity > 0 ? 'right' : 'left';
-      if (this.checkSide(world.blocks, direction)) {
-        this.location.x = Math.round((this.location.x) / CELL) * CELL;
-      }
-      else {
-        this.location.x += this.velocity.x;
-      }
+    const horizontalLocation = Vector2.Add(this.location, new Vector2(horizontalVelocity, 0));
+    const horizontalBB = new BoundingBox(horizontalLocation, this.dimensions);
+
+    if (horizontalBB.intersects(world.blocks)) {
+      this.location.x = Math.round((this.location.x) / CELL) * CELL;
+    }
+    else {
+      this.location.x += this.velocity.x;
     }
 
     // Reset acceleration

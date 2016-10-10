@@ -25,7 +25,7 @@
 
     <script>
       const testPlayer = new TestPlayer();
-      const controls = new KeyboardControls(testPlayer);
+      testPlayer.attachControls(new KeyboardControls());
 
       const world = new World(CELL * 500, CELL * 256, testPlayer);
       new WorldGenerator(world).build();

@@ -1,11 +1,37 @@
 class TestPlayer extends PhysicsEntity {
   constructor() {
-    super(new Vector2(0, 532), new Vector2(CELL, CELL * 2), 10, 1, new Vector2(30, 0), new Vector2(0, 20));
+    super(
+      new Vector2(0, 532),            // Location
+      new Vector2(CELL, CELL * 2),    // Dimensions
+      new Vector2(5, 20),             // Max velocity
+      1,                              // Mass
+      new Vector2(2, 0),              // Move speed
+      new Vector2(0, 15.5)            // Jump speed
+    );
+
+    this.jumping = false;
   }
 
   update(world) {
-    // // this.addForce(new Vector2(1, 1));
-    // this.addForce(new Vector2(0, -GRAVITY.y));
+    if (!this.controls) return;
+
+    if (this.jumping) {
+      const block = this.getBlockUnder(world.blocks);
+      if (block) {
+        this.jumping = false;
+      }
+    }
+    else if (this.controls.state.JUMP) {
+      this.jumping = true;
+      this.addForce(this.jumpSpeed);
+    }
+
+    if (this.controls.state.LEFT) {
+      this.addForce(Vector2.Scale(this.moveSpeed, -1));
+    }
+    else if (this.controls.state.RIGHT) {
+      this.addForce(this.moveSpeed);
+    }
   }
 
   render(pipeline) {
@@ -13,28 +39,5 @@ class TestPlayer extends PhysicsEntity {
     const camera = pipeline.camera;
     pipeline.ctx.fillStyle = 'red';
     ctx.fillRect(camera.getCenterX(), camera.getCenterY(), camera.sx(this.dimensions.x), camera.sy(this.dimensions.y));
-
-    pipeline.ctx.fillStyle = 'blue';
-    let x = Math.round((this.location.x) / CELL) * CELL;
-    let y = Math.round((this.location.y + CELL) / CELL) * CELL;
-    ctx.fillRect(pipeline.camera.tx(x), pipeline.camera.ty(y), 8, 8);
-    y = Math.round((this.location.y - this.dimensions.y) / CELL) * CELL;
-    ctx.fillRect(pipeline.camera.tx(x), pipeline.camera.ty(y), 8, 8);
-
-    let side = "left";
-    x = side === "left" ?
-      Math.round((this.location.x + -CELL) / CELL) * CELL :
-      Math.round((this.location.x + this.dimensions.x) / CELL) * CELL;
-    for (y = Math.round((this.location.y) / CELL) * CELL; y > this.location.y - this.dimensions.y; y -= CELL) {
-      ctx.fillRect(pipeline.camera.tx(x), pipeline.camera.ty(y), 8, 8);
-    }
-
-    side = "right";
-    x = side === "left" ?
-      Math.round((this.location.x + -CELL) / CELL) * CELL :
-      Math.round((this.location.x + this.dimensions.x) / CELL) * CELL;
-      for (y = Math.round((this.location.y) / CELL) * CELL; y > this.location.y - this.dimensions.y; y -= CELL) {
-        ctx.fillRect(pipeline.camera.tx(x), pipeline.camera.ty(y), 8, 8);
-      }
   }
 }

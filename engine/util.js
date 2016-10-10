@@ -113,7 +113,7 @@ class Vector2 {
    */
   normalize() {
     const mag = this.magnitude();
-    if (mag === 0) return;
+    if (mag === 0) return this;
     return this.update(Vector2.Divide(this, mag));
   }
 
@@ -127,8 +127,54 @@ class Vector2 {
     (this.y > 0) ? this.y = Math.min(this.y, cap) : this.y = Math.max(this.y, -cap);
     return this;
   }
+
+  limitByVector(vec) {
+    (this.x > 0) ? this.x = Math.min(this.x, vec.x) : this.x = Math.max(this.x, -vec.x);
+    (this.y > 0) ? this.y = Math.min(this.y, vec.y) : this.y = Math.max(this.y, -vec.y);
+    return this;
+  }
+
+  /**
+   * Return a copy of this vector.
+   * @return {Vector2} vector
+   */
+  copy() {
+    return new Vector2(this.x, this.y);
+  }
 }
 
+class BoundingBox {
+  /**
+   * Create a new bounding box.
+   * @param {Vector2} location
+   * @param {Vector2} dimensions
+   */
+  constructor(location, dimensions) {
+    this.location = location;
+    this.dimensions = dimensions;
+  }
+
+  /**
+   * Check if this bounding box intersects with the given blocks.
+   * @param {array} blocks
+   * @return {bool} intersects
+   */
+  intersects(blocks) {
+    for (var x = Math.round((this.location.x - (CELL / 2)) / CELL) * CELL; x < this.location.x + this.dimensions.x; x += CELL) {
+      if (blocks[x] == undefined) {
+        continue;
+      }
+
+      for (var y = Math.round((this.location.y) / CELL) * CELL; y > this.location.y - this.dimensions.y; y -= CELL) {
+        if (blocks[x][y] != undefined) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+}
 
 // http://stackoverflow.com/questions/1527803/generating-random-whole-numbers-in-javascript-in-a-specific-range
 function getRandomArbitrary(min, max) {
