@@ -1,5 +1,6 @@
 # NodeJS related files
 node_modules/
+npm-debug.log
 
 # Build files
 build/*

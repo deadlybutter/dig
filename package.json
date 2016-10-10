@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "dist": "electron-packager . --all --out ./build",
-    "dist_windows": "electron-packager . --platform=win32 --arch=x64 --out ./build"
+    "dist_windows": "electron-packager . --platform=win32 --arch=x64 --out ./build",
+    "start": "./node_modules/.bin/electron ."
   },
   "author": "",
   "license": "ISC",
