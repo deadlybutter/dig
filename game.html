@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <title>Dig</title>
     <style>
       * {
         margin: 0;
@@ -26,7 +26,7 @@
     <script src="engine/renderer.js"></script>
 
     <script>
-      const hosting = false;
+      const hosting = localStorage.getItem('hosting') === "true";
 
       const socket = new NetworkInterface('http://localhost:5000');
 

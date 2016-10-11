@@ -1,10 +1,10 @@
-const {app, BrowserWindow} = require('electron');
+const {app, BrowserWindow, ipcMain} = require('electron');
 
 let window;
 
 function createWindow() {
   window = new BrowserWindow({width: 1280, height: 720});
-  window.loadURL(`file://${__dirname}/game.html`);
+  window.loadURL(`file://${__dirname}/main.html`);
 
   window.webContents.openDevTools();
 
@@ -12,6 +12,10 @@ function createWindow() {
     window = null;
   });
 }
+
+ipcMain.on('load-page', (event, arg) => {
+  window.loadURL(arg);
+});
 
 app.on('ready', createWindow);
 

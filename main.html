@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Dig</title>
+  </head>
+  <body>
+    <button id="host">Host</button>
+    <button id="join">Join</button>
+
+    <script>
+      const ipc = require('electron').ipcRenderer;
+
+      function loadGame(hosting) {
+        localStorage.setItem('hosting', hosting);
+        ipc.send('load-page', 'file://' + __dirname + '/game.html');
+      }
+
+      const hostButton = document.getElementById('host');
+      hostButton.addEventListener('click', () => {
+        loadGame(true);
+      }, false);
+
+      const joinButton = document.getElementById('join');
+      joinButton.addEventListener('click', () => {
+        loadGame(false);
+      }, false);
+    </script>
+  </body>
+</html>
