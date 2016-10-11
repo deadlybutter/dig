@@ -32,6 +32,7 @@ class World {
     this.fixPlayerHeight = this.fixPlayerHeight.bind(this);
 
     this.socket.broadcast(EVENT_ENTITY_ADD, {uuid: mainPlayer.uuid, type: mainPlayer.toString()});
+    this.pushChangedEntityLocation(mainPlayer);
 
     this.subscribeToWorldEvents = this.subscribeToWorldEvents.bind(this);
     this.subscribeToWorldEvents();
@@ -42,6 +43,9 @@ class World {
     }
   }
 
+  /**
+   * Subscribe this world to various events so it can update its state.
+   */
   subscribeToWorldEvents() {
     this.socket.subscribe(EVENT_MAP_RECIEVE, data => {
       if (!data.blocks) return;
@@ -72,6 +76,9 @@ class World {
     });
   }
 
+  /**
+   * Subscribe to events only the host should care about.
+   */
   subscribeToHostEvents() {
     this.socket.subscribe(EVENT_CLIENT_JOIN, data => {
       // Send the current map
@@ -79,7 +86,9 @@ class World {
 
       // Send the current entities
       Object.keys(this.entities).forEach(uuid => {
-        this.socket.send(EVENT_ENTITY_ADD, {type: this.entities[uuid].toString(), uuid: uuid}, data._headers.from);
+        const entity = this.entities[uuid];
+        this.socket.send(EVENT_ENTITY_ADD, {type: entity.toString(), uuid: uuid}, data._headers.from);
+        this.pushChangedEntityLocation(entity);
       });
     });
   }

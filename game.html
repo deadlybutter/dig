@@ -28,10 +28,12 @@
     <script>
       const hosting = false;
 
+      const socket = new NetworkInterface('http://localhost:5000');
+
       const testPlayer = new TestPlayer();
       testPlayer.attachControls(new KeyboardControls());
 
-      const world = new World(CELL * 500, CELL * 256, testPlayer, new NetworkInterface('http://localhost:5000'), hosting);
+      const world = new World(CELL * 500, CELL * 256, testPlayer, socket, hosting);
       if (hosting) {
         const generator = new WorldGenerator(world);
         generator.build();
