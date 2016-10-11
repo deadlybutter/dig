@@ -49,8 +49,8 @@ class RenderPipeline {
     }
 
     // render physics entities
-    this.world.entities.physics.forEach((entity) => {
-      entity.render(this);
+    Object.keys(world.entities).forEach(uuid => {
+      world.entities[uuid].render(this);
     });
 
     // render debug

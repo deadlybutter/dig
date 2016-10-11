@@ -7,6 +7,7 @@ class Entity {
   constructor(location, dimensions) {
     this.location = location;
     this.dimensions = dimensions;
+    this.uuid = generateUUID();
 
     this._privateUpdate = this._privateUpdate.bind(this);
     this.update = this.update.bind(this);

@@ -14,7 +14,7 @@ class WorldGenerator {
       this.world.blocks[x] = [];
       for (var y = 0; y < this.world.height; y += CELL) {
         if (Math.random() > 0.5) continue;
-        this.world.blocks[x][y] = new Block(new Vector2(x, y), 'test', 10);
+        this.world.blocks[x][y] = new Block(new Vector2(x, y), '#'+Math.floor(Math.random()*16777215).toString(16), 10);
       }
     }
   }

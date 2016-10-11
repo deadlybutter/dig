@@ -1,8 +1,7 @@
 class Block {
   constructor(location, texture, friction) {
     this.location = location;
-    // this.texture = texture;
-    this.texture = '#'+Math.floor(Math.random()*16777215).toString(16);
+    this.texture = texture;
     this.friction = friction;
   }
 

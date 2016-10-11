@@ -1,3 +1,5 @@
+const PLAYER_TEST_NAME = 'TestPlayer';
+
 class TestPlayer extends PhysicsEntity {
   constructor() {
     super(
@@ -38,6 +40,10 @@ class TestPlayer extends PhysicsEntity {
     const ctx = pipeline.ctx;
     const camera = pipeline.camera;
     pipeline.ctx.fillStyle = 'red';
-    ctx.fillRect(camera.getCenterX(), camera.getCenterY(), camera.sx(this.dimensions.x), camera.sy(this.dimensions.y));
+    ctx.fillRect(camera.tx(this.location.x), camera.ty(this.location.y), camera.sx(this.dimensions.x), camera.sy(this.dimensions.y));
+  }
+
+  toString() {
+    return PLAYER_TEST_NAME;
   }
 }
